@@ -47,9 +47,9 @@ class JSonActiveDataProvider extends CActiveDataProvider
 			return array(
 					'itemCount' => $this->getItemCount(),
 					'totalItemCount' => (int) $this->getTotalItemCount(),
-					'currentPage' => $this->pagination->currentPage,
-					'pageCount' => $this->pagination->pageCount,
-					'pageSize' => $this->pagination->pageSize,
+					'currentPage' => $this->pagination ? $this->pagination->currentPage : 1,
+					'pageCount' => $this->pagination ? $this->pagination->pageCount : 1,
+					'pageSize' => $this->pagination ? $this->pagination->pageSize : $this->getItemCount(),
 					'data' => $arrayData
 			);
 		}
