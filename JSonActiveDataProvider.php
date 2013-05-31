@@ -1,8 +1,37 @@
+<?php
 class JSonActiveDataProvider extends CActiveDataProvider
 {
-  public $attributes;
+	/**
+	 * 
+	 * @var mixed If is set to null (default) all attributes of the model will be added. 
+	 *            If a string is given, only this attribute will added. 
+	 *            If an array of strings is given, all elements will be retrieved.
+	 */
+	public $attributes;
+	
+	/**
+	 * 
+	 * @var mixed If is set to null (default) no relations of the model will be added. 
+	 *            If a string is given, only the mentioned relation will be added.
+	 *            If an array is given, there a two valid array formats:
+	 *            
+	 *            1. array('relation1', 'relation2') will return the mentioned relations with all attributes, but no sub relations
+	 *            2. array('relation1', 'relation2' => array('attributes' => array('foo', 'bar'), 'relations' => array('subRelation'))) will return configured attributes and relations for relation2
+	 *            
+	 *            Sub configurations of relations follow the same rules like the global configuration for attributes and relations
+	 */
 	public $relations;
+	
+	/**
+	 * 
+	 * @var array An array where the key is the original attribute name and the value the alias to be used instead when retrieving it. This will affect all retrieved models recursively.
+	 */
 	public $attributeAliases;
+	
+	/**
+	 * 
+	 * @var boolean When set to true the root of the json will have meta informations from the data provider for counts and pagination.
+	 */
 	public $includeDataProviderInformation = true;
 	
 	public function getArrayData($refresh=false)
