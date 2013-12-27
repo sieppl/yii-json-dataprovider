@@ -58,6 +58,12 @@ class ModelToArrayConverter extends CComponent
 	protected function convertModel($model, $attributes = null, $relations = null)
 	{
 		$relationArray = array();
+
+		if ($attributes === null){
+			$attributes = array();
+			foreach ($model->attributes as $attr=>$type)
+				$attributes[] = $attr;
+		}
 		
 		if ($relations === true || is_array($relations) || is_string($relations))
 		{
