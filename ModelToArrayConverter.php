@@ -20,7 +20,14 @@ class ModelToArrayConverter extends CComponent
 	 *            1. array('relation1', 'relation2') will return the mentioned relations with all attributes, but no sub relations
 	 *            2. array('relation1', 'relation2' => array('attributes' => array('foo', 'bar'), 'relations' => array('subRelation'))) will return configured attributes and relations for relation2
 	 *
-	 *            Sub configurations of relations follow the same rules like the global configuration for attributes and relations
+	 *            Sub configurations of relations have the global configuration attributes and relations plus two extra ones:
+	 *			  refresh boolean whether to reload the related objects from database.
+	 *			  params array|mixed array or CDbCriteria object with additional parameters that customize the query.
+	 *			  These will be used as parameters of the getRelated method when retrieving the related model. For more information
+	 * 			  please refer to: http://www.yiiframework.com/doc/api/1.1/CActiveRecord#getRelated-detail
+	 *
+	 *
+	 * follow the same rules like the global configuration for attributes and relations
 	 */
 	protected $_relations;	
 	
@@ -84,13 +91,25 @@ class ModelToArrayConverter extends CComponent
 			{
 				$relAttributes = null;
 				$relRelations = null;
+				/**
+				 * @var array|mixed array or CDbCriteria object with additional parameters that customize the query
+				 * conditions as specified in the relation declaration. See more at http://www.yiiframework.com/doc/api/1.1/CActiveRecord#getRelated-detail
+				 */
+				$relParams = array();
+				/**
+				 * @var boolean whether to reload the related objects from database. See more at
+				 * http://www.yiiframework.com/doc/api/1.1/CActiveRecord#getRelated-detail
+				 */
+				$relRefresh = false;
 		
 				$relationName = $relation;
 				if (is_array($relation))
 				{
 					$relationName = $key;
 					
-					if (!isset($relation['attributes']) && !isset($relation['relations']))
+					if (!isset($relation['attributes']) && !isset($relation['relations']) &&
+						!isset($relation['refresh']) && !isset($relation['params'])
+					)
 					{
 						// for convenient configuration
 						$relAttributes = $relation;
@@ -99,10 +118,12 @@ class ModelToArrayConverter extends CComponent
 					{
 						$relAttributes = isset($relation['attributes']) ? $relation['attributes'] : null;
 						$relRelations = isset($relation['relations']) ? $relation['relations'] : null;
+						$relParams = isset($relation['params']) ? $relation['params'] : array();
+						$relRefresh = isset($relation['refresh']) ? $relation['refresh'] : false;
 					}
 				}
 		
-				$relatedModels = $model->getRelated($relationName);
+				$relatedModels = $model->getRelated( $relationName , $relRefresh , $relParams );
 				if (is_array($relatedModels))
 				{
 					foreach ($relatedModels as $relatedModel)
